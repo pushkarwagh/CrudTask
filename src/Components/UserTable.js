@@ -3,34 +3,32 @@ import { Table } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 
 import { GrEdit, GrView } from "react-icons/gr";
-import { MdDelete } from "react-icons/md";
+import { MdDelete} from "react-icons/md";
 
 class UserTable extends React.Component {
 
-  constructor(props) {
-    super(props);
+  // constructor(props) {
+  //   super(props);
+  //   /*this.handleData= this.handleData.bind(this); */
 
-    this.state = {
-      userRecord: [
-        { id: 1, name: 'rakesh', gender: 'm', email: 'abx@gh.com', contact: 452136 },
-        { id: 2, name: 'ramesh', gender: 'm', email: 'fg@gh.com', contact: 658136 },
-        { id: 3, name: 'Riya', gender: 'f', email: 'ncn@gh.com', contact: 235136 },
-        { id: 4, name: 'Mansi', gender: 'f', email: 'zdfghb@gh.com', contact: 451136 }
-      ],
-    };
-    /*this.handleData= this.handleData.bind(this); */
-
-  }
+  // }
   /* handleData=(item)=>{
     this.history.push(`/userCard/:${item}`) 
   } */
+  
+  componentWillUnmount() {
+    alert('leaving the table page!')
+  }
 
 
-  deleteData = (element) => {
-    this.setState((prev) => {
-      return prev.filter((user) => user.id !== element.id)
-    });
+  deleteData = (id) => {
+    // console.log(id)
 
+    this.props.deleteUserData(id);
+    //  this.setState((element) => {
+    //   return element.filter((user) => user.id !== element.id)
+    // });   
+   
   }
 
   render() {
@@ -57,25 +55,34 @@ class UserTable extends React.Component {
                 <th> Name </th>
                 <th> Gender </th>
                 <th> E-mail </th>
-                <th> Contact</th>
+                <th> Contact: </th>
                 <th colSpan={3} style={{ textAlign: "center" }}> Action</th>
               </tr>
 
-              {this.state.userRecord.map((element, index) => (
+              {this.props.userRecord.map((element, index) => (
 
                 <tr key={index}>
                   <td> {element.id} </td>
                   <td> {element.name} </td>
                   <td> {element.gender} </td>
                   <td> {element.email} </td>
-                  <td> {element.contact} </td>
+                  <td> {element.contact.cc} - {element.contact.num}</td>
 
                   <td>
-                  <Link to={{ pathname : `/userCard/${element.id}`, state:{data: element}  }}>  <GrView /> </Link>
-                     
+                     <Link to={{ pathname : `/viewUser/${element.id}`, state:{data: element} }}> 
+                       <GrView /> 
+                     </Link> 
                   </td>
-                  <td>  <GrEdit /> </td>
-                  <td>  <MdDelete onClick={(element) => this.deleteData(element)} /> </td>
+
+                  <td> 
+                    <Link to={{ pathname : `/editUser/${element.id}` }}> 
+                      <GrEdit /> 
+                    </Link> 
+                  </td>
+
+                  <td>  
+                    <button onClick={()=>this.deleteData(element.id)} > <MdDelete /> </button>
+                  </td>
 
                 </tr>
               ))}

@@ -11,11 +11,13 @@ class ViewUser extends React.Component {
 
   }
   
-  componentDidMount()  {
-     
+  componentDidMount()  {     
      const pathId= Number( window.location.pathname.split('/')[2].slice(-1) )
      this.setState( {id: pathId} )
+  }
 
+  componentWillUnmount() {
+    alert('leaving the viewuser page!')
   }
   
  
@@ -32,16 +34,16 @@ class ViewUser extends React.Component {
               <Card.Title style={{ textAlign: 'center' }}> <u>User Records</u></Card.Title>
               <Card.Text>
                 { userData.map( (item,index) => (
+                    
+                    <ul key={index} className='border border-primary' style={{listStyleType:'none'}}>
+                       <li> Id: {item.id} </li>
+                       <li> Name: {item.name} </li>
+                       <li> Gender: {item.gender} </li>
+                       <li> E-mail: {item.email} </li>
+                       <li> Contact: {item.contact.cc} - {item.contact.num}</li>
+                    </ul>
                       
-                      <ul key={index} className='border border-primary' style={{listStyleType:'none'}}>
-                        <li> Id: {item.id} </li>
-                        <li> Name: {item.name} </li>
-                        <li> Gender: {item.gender} </li>
-                        <li> E-mail: {item.email} </li>
-                        <li> Contact: {item.contact} </li>
-                      </ul>
-                ) ) }    
-                
+                ))}                   
               </Card.Text>
             </Card.Body>
           </Card>
