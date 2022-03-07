@@ -17,8 +17,8 @@ class EditUser extends React.Component {
 
   componentDidMount() {
     this.props.data.filter( (items, index) => 
-    (items.id === this.state.id) ).map( (item) => (this.setState(item) ))  ;
-   
+    (items.id === this.state.id) ).map(item => this.setState(item))  ;
+    
   }
 
 
@@ -31,13 +31,12 @@ class EditUser extends React.Component {
   }
 
   changeUserData = ()=>{
-    const editData = [{...this.state}]
+    const editData = [{ ...this.state }]
     this.props.editUserData(editData)
   }
 
 
   render() {
-    
     return (
       <>
         <div className="card my-2 border-danger">
@@ -98,7 +97,7 @@ class EditUser extends React.Component {
           <footer className="my-1 p-1">
 
              <button onClick={this.changeUserData}> 
-                <Link to='/userRecords' style={{ textDecoration: 'none', color: 'black' }}> 
+                <Link to='/' style={{ textDecoration: 'none', color: 'black' }}> 
                    Done 
                 </Link>
              </button>  
