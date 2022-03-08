@@ -6,18 +6,21 @@ import { GrEdit, GrView } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
 
 class UserTable extends React.Component {
-  // constructor(props) {
-  //   super(props);
-  //   /*this.handleData= this.handleData.bind(this); */
+  constructor(props) {
+    super(props);
+    this.state = {
+      addOrEdit: true 
+    }
+    /*this.handleData= this.handleData.bind(this); */
 
-  // }
+  }
   /* handleData=(item)=>{
     this.history.push(`/userCard/:${item}`) 
   } */
 
-  componentWillUnmount() {
-    alert("leaving the table page!");
-  }
+  // componentWillUnmount() {
+  //   alert("leaving the table page!");
+  // }
 
   deleteData = (id) => {
     // console.log(id)
@@ -26,6 +29,10 @@ class UserTable extends React.Component {
     //   return element.filter((user) => user.id !== element.id)
     // });
   };
+
+  addOrEdit = (change) => {
+    this.props.isChange(change);
+  }
 
   render() {
     return (
@@ -41,7 +48,7 @@ class UserTable extends React.Component {
                 <th colSpan={2}>
                   <Link to = "/userForm" >
                     {" "}
-                    <button type = "button" > Add-User </button>{" "}
+                    <button type = "button" onClick = { () => this.addOrEdit(true) } > Add-User </button>{" "}
                   </Link>
                 </th>
               </tr>
@@ -83,8 +90,8 @@ class UserTable extends React.Component {
                   </td>
 
                   <td>
-                    <Link to = { { pathname: `/editUser/${ element.id }` } } >
-                      <GrEdit />
+                    <Link to = { { pathname: `/userForm/${ element.id }` } } >
+                      <GrEdit onClick = { () => this.addOrEdit(false) }/>
                     </Link>
                   </td>
 

@@ -5,12 +5,14 @@ import UserForm from "./UserForm";
 import UserTable from "./UserTable";
 import Header from "./Header";
 import ViewUser from "./ViewUser";
-import EditUser from "./EditUser";
+// import EditUser from "./EditUser";
+// import AddOrEdit from "./AddOrEdit";
 
 class Task3Router extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isAdd: true,
       userRecord: [
         {
           id: 1,
@@ -54,7 +56,7 @@ class Task3Router extends React.Component {
   addFormData = (formData) => {
     const userRef = [...this.state.userRecord];
     userRef.push(formData);
-    this.setState( { userRecord: userRef } );
+    this.setState({ userRecord: userRef });
   };
 
   deleteUserData = (id) => {
@@ -63,15 +65,25 @@ class Task3Router extends React.Component {
     // console.log(deleteRef);
     // this.setState({ userRecord: deleteRef });
 
-    const deleteRef = [...this.state.userRecord ]
-    const deleteIndex = deleteRef.findIndex(item => item.id === id);
-    deleteRef.splice(deleteIndex,1);
-    this.setState( { userRecord: deleteRef } );
+    const deleteRef = [...this.state.userRecord];
+    const deleteIndex = deleteRef.findIndex((user) => user.id === id);
+    deleteRef.splice(deleteIndex, 1);
+    this.setState({ userRecord: deleteRef });
   };
 
   editUserData = (editData) => {
-    const editRef = Object.assign(...this.state.userRecord, ...editData);
-    console.log("edited-user", editRef);
+    const newData = [];
+    this.state.userRecord.map((user) =>
+      user.id === editData[0].id
+        ? newData.push(editData[0])
+        : newData.push(user)
+    );
+    console.log("edit",editData[0]);
+    this.setState({ userRecord: newData });
+  };
+
+  isChange = (change) => {
+    this.setState({ isAdd: change });
   };
 
   // submitForm = (event) =>{
@@ -89,53 +101,56 @@ class Task3Router extends React.Component {
 
   render() {
     console.log("main state", this.state.userRecord);
-
+    
     return (
-        <BrowserRouter>
-          <Header />
+      <BrowserRouter>
+        <Header />
 
-          <div className="container p-2 bg-light">
-            <Routes>
-              <Route
-                path = "/"
-                element = {
-                  <UserTable
-                    userRecord = { this.state.userRecord }
-                    deleteUserData = { this.deleteUserData }
-                  />
-                }
-              />
+        <div className="container p-2 bg-light">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <UserTable
+                  userRecord={this.state.userRecord}
+                  deleteUserData={this.deleteUserData}
+                  isChange={this.isChange}
+                />
+              }
+            />
 
-              <Route
-                path = "/userForm"
-                element = {
-                  <UserForm
-                    data = { this.state.userRecord }
-                    addFormData = { this.addFormData }
-                    handleInputChange = { this.handleInputChange }
-                    editUserData = { this.editUserData }
-                  />
-                }
-              />
+            <Route
+              path="/userForm"
+              element={
+                <UserForm
+                  data={this.state.userRecord}
+                  addFormData={this.addFormData}
+                  handleInputChange={this.handleInputChange}
+                  editUserData={this.editUserData}
+                  isAdd={this.state.isAdd}
+                />
+              }
+            />
 
-              <Route
-                path = "/viewUser/:id"
-                element = { <ViewUser data={this.state.userRecord} /> }
-              />
+            <Route
+              path="/viewUser/:id"
+              element={<ViewUser data={this.state.userRecord} />}
+            />
 
-              <Route
-                path="/editUser/:id"
-                element = {
-                  <EditUser
-                    data = {this.state.userRecord}
-                    handleInputChange = { this.handleInputChange }
-                    editUserData = { this.editUserData }
-                  />
-                }
-              />
-            </Routes>
-          </div>
-        </BrowserRouter>
+            <Route
+              path="/userForm/:id"
+              element={
+                <UserForm
+                  data={this.state.userRecord}
+                  handleInputChange={this.handleInputChange}
+                  editUserData={this.editUserData}
+                  isAdd={this.isAdd}
+                />
+              }
+            />
+          </Routes>
+        </div>
+      </BrowserRouter>
     );
   }
 }
