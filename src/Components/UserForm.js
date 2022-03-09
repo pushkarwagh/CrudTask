@@ -12,9 +12,50 @@ class UserForm extends React.Component {
       gender: "",
       email: "",
       contact: { cc: 91, num: "" },
+      formErrors: {} 
     };
+    this.initialState = this.state;   
   }
+  
+  handleFormValidation() {  
+    debugger  
+    const { name, email,contact } = this.state;
+    const { num } = contact;    
+    let formErrors = {};    
+    let formIsValid = true;    
 
+    // name     
+    if (!name) {    
+        formIsValid = false;    
+        formErrors["nameErr"] = "Name is required.";    
+    }    
+
+    //Email    
+    if (!email) {    
+        formIsValid = false;    
+        formErrors["emailErr"] = "Email id is required.";    
+    }    
+    else if ( !(/^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/.test(email)) ) {   
+        formIsValid = false;    
+        formErrors["emailErr"] = "Invalid email id.";    
+    }      
+
+    //Phone number    
+    if (!num) {    
+        formIsValid = false;    
+        formErrors["numErr"] = "Phone number is required.";    
+    }    
+    else {    
+        var mobPattern = /^(\+\d{1,3}[- ]?)?\d{9}$/;    
+        if (!mobPattern.test(num)) {    
+            formIsValid = false;    
+            formErrors["numErr"] = "Invalid phone number.";    
+        }    
+    }   
+    this.setState({ formErrors: formErrors });    
+    return formIsValid;   
+  
+} 
   // componentWillUnmount() {
   //   alert("leaving the form page!");
   // }
@@ -47,21 +88,21 @@ class UserForm extends React.Component {
 
   componentDidMount() {
     if (this.props.isAdd === true) {
-      //console.log("no of id: ", this.props.data.length);
       this.setState({ id: Number(this.props.data.length) });
     } else {
+      document.getElementById("generate").disabled = true;
       const userid = Number(window.location.pathname.split("/")[2].slice(-1));
       this.setState({ id: userid });
 
-      const useredit = this.props.data.find(
-        (user, index) => user.id === userid
+      const userEdit = this.props.data.find(
+        (user) => user.id === userid
       );
       this.setState({
         id: userid,
-        name: useredit.name,
-        gender: useredit.gender,
-        email: useredit.email,
-        contact: { cc: useredit.contact.cc, num: useredit.contact.num },
+        name: userEdit.name,
+        gender: userEdit.gender,
+        email: userEdit.email,
+        contact: { cc: userEdit.contact.cc, num: userEdit.contact.num },
       });
     }
   }
@@ -100,6 +141,8 @@ class UserForm extends React.Component {
     const { value, name } = event.target;
     if (name === "num") this.setState({ contact: { cc: 91, num: value } }); //this.state.contact.num = value
     this.setState({ [name]: value });
+    
+    this.handleFormValidation(this.state);
   };
 
   handleSubmit = (event) => {
@@ -112,6 +155,12 @@ class UserForm extends React.Component {
       contact: { cc: 91, num: this.state.contact.num },
     };
     this.props.addFormData(formData);
+
+    if (this.handleFormValidation()) {
+      alert("You have been successfully registered.");
+    }
+    
+    this.setState(this.initialState);
   };
 
   changeUserData = () => {
@@ -122,7 +171,8 @@ class UserForm extends React.Component {
   render() {
     const { id, name, gender, email, contact } = this.state;
     const { cc, num } = contact;
-    const isAdd = this.props;
+    
+    const { nameErr, emailErr, numErr } = this.state.formErrors; 
 
     return (
       <div
@@ -130,9 +180,7 @@ class UserForm extends React.Component {
         style={{ backgroundColor: "lightblue" }}
       >
         Add-User
-        <Form
-          className=" border border-primary p-2" /*onSubmit={this.submitForm}*/
-        >
+        <Form className=" border border-primary p-2" >
           <label className="mb-1 p-2">
             Name:
             <input
@@ -141,12 +189,20 @@ class UserForm extends React.Component {
               value={name}
               onChange={this.handleInputChange}
               required
-            />
+              className={nameErr ? ' showError' : ''} 
+            /> 
+            { nameErr && 
+              <div style = {{ color: "red", paddingBottom: 10 }} >
+                {nameErr}
+              </div>
+            }  
           </label>{" "}
+
           <br />
           <label className="mb-1 p-2">
             Gender:
             <input
+              required
               className="ms-2"
               type="radio"
               name="gender"
@@ -155,7 +211,9 @@ class UserForm extends React.Component {
               onChange={this.handleInputChange}
             />{" "}
             Male
+
             <input
+              required
               className="ms-2"
               type="radio"
               name="gender"
@@ -166,6 +224,7 @@ class UserForm extends React.Component {
             Female
           </label>{" "}
           <br />
+
           <label className="mb-1 p-2">
             E-mail:
             <input
@@ -174,8 +233,15 @@ class UserForm extends React.Component {
               value={email}
               onChange={this.handleInputChange}
               required
+              className={emailErr ? ' showError' : ''}
             />
+            { emailErr &&    
+              <div style={{ color: "red", paddingBottom: 10 }}>
+                {emailErr}
+              </div>
+            }    
           </label>{" "}
+
           <br />
           <label className="mb-1 p-2">
             Contact:
@@ -186,6 +252,7 @@ class UserForm extends React.Component {
               style={{ width: 40, height: 30, marginRight: 2 }}
               disabled
             />
+
             No:
             <input
               type="number"
@@ -193,8 +260,15 @@ class UserForm extends React.Component {
               value={num}
               onChange={this.handleInputChange}
               required
+              className={numErr ? ' showError' : ''}
             />
+            { numErr &&    
+              <div style={{ color: "red", paddingBottom: 10 }}>
+                {numErr}
+              </div>    
+            }    
           </label>{" "}
+
           <br />
           <label className="mb-1 p-2">
             UserId:
@@ -206,42 +280,61 @@ class UserForm extends React.Component {
               onChange={this.generateId}
             />
           </label>
+
           <button
             id="generate"
             type="button"
             onClick={this.generateId}
-            className="mx-2"
+            className="mx-2 btn btn-warning"
           >
             Generate-Id
           </button>{" "}
           <br />
+
         </Form>
+
         <footer className="m-2 ">
           {this.props.isAdd ? (
             <>
-              <button type ="submit" onClick = { this.handleSubmit } >
-                <Link to = "/" style = { { textDecoration: "none", color: "black" }} >
+              <button
+                className="ms-1 p-1 btn btn-success"
+                type="submit"
+                onClick={this.handleSubmit}
+              >
+                <Link to="/" style={{ textDecoration: "none", color: "black" }}>
                   Submit
                 </Link>
               </button>
 
-              <button type="reset" onClick={this.resetForm}>
+              <button
+                className="ms-1 p-1 btn btn-info"
+                type="reset"
+                onClick={this.resetForm}
+              >
                 {" "}
                 Reset{" "}
               </button>
             </>
           ) : (
-            <Link to = "/" style = { { textDecoration: "none", color: "black" } } >
-              <button onClick = { this.changeUserData } > Save </button>
-            </Link>
+            <button
+              className="ms-1 p-1 btn btn-success"
+              onClick={this.changeUserData}
+            >
+              <Link to="/" style={{ textDecoration: "none", color: "black" }}>
+                Save
+              </Link>
+            </button>
           )}
 
-          <button type = "cancel" onClick = { this.cancelForm } >
-            <Link to = "/" style = {{ textDecoration: "none", color: "black" }} >
+          <button
+            className="ms-1 p-1 btn btn-danger"
+            type="cancel"
+            onClick={this.cancelForm}
+          >
+            <Link to="/" style={{ textDecoration: "none", color: "black" }}>
               Cancel
             </Link>
           </button>
-
         </footer>
       </div>
     );
