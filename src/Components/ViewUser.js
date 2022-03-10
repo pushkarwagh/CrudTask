@@ -24,17 +24,17 @@ class ViewUser extends React.Component {
     const userData = this.props.data.filter( (items,index) => items.id === this.state.id );
         
     return (
-        <div className = "card my-2 bg-danger" >
-          <Card className = 'border-danger ' style = { { width: 'auto', height: 'auto' } } >
+        <div className = "card my-2 " >
+          <Card className = 'bg-dark p-2 shadow' >
             <Card.Body>
-              <Card.Title style = { { textAlign: 'center' } } > 
-                <u> User Records </u>
+              <Card.Title className="text-center text-light border border-light p-2 shadow" > 
+                <h4> User Records </h4>
               </Card.Title>
-              <Card.Text>
+              <Card.Text className="p-2 text-light">
                 { userData.map( (item,index) => (
                     
                     <ul key = { index } 
-                        className = 'border border-primary' 
+                        className = 'p-2 border' 
                         style = { { listStyleType:'none' } } 
                     >
                        <li> Id: { item.id } </li>

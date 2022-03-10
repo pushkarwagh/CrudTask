@@ -73,7 +73,7 @@ class UserTable extends React.Component {
               </th>
             </tr>
 
-            {this.props.userRecord.map((element, index) => (
+            { this.props.userRecord.map((element, index) => (
               <tr key={index}>
                 <td> {element.id} </td>
                 <td> {element.name} </td>
@@ -105,7 +105,7 @@ class UserTable extends React.Component {
                   <MdDelete onClick = { () => this.deleteData(element.id) } />
                 </td>
               </tr>
-            ))}
+            )) }
           </tbody>
         </Table>
       </div>

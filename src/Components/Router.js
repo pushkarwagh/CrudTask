@@ -72,6 +72,11 @@ class Task3Router extends React.Component {
   };
 
   editUserData = (editData) => {
+    //method-1...
+    // const editRef = [...this.state.userRecord];
+    // Object.assign( editRef.find(user => user.id == editData[0].id), ...editData);
+
+    //method-2...
     const newData = [];
     this.state.userRecord.map((user) =>
       user.id === editData[0].id

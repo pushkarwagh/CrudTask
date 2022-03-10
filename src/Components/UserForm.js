@@ -12,47 +12,46 @@ class UserForm extends React.Component {
       gender: "",
       email: "",
       contact: { cc: 91, num: "" },
-      formErrors: {} 
+      formErrors: {} ,formIsValid:true
     };
     this.initialState = this.state;   
   }
   
   handleFormValidation() {  
-    debugger  
-    const { name, email,contact } = this.state;
+    const { name, email,contact ,formIsValid } = this.state;
     const { num } = contact;    
     let formErrors = {};    
-    let formIsValid = true;    
+    let formValid = formIsValid ; 
 
     // name     
     if (!name) {    
-        formIsValid = false;    
+        formValid = false;    
         formErrors["nameErr"] = "Name is required.";    
     }    
 
     //Email    
     if (!email) {    
-        formIsValid = false;    
+        formValid = false;    
         formErrors["emailErr"] = "Email id is required.";    
     }    
     else if ( !(/^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/.test(email)) ) {   
-        formIsValid = false;    
+        formValid = false;    
         formErrors["emailErr"] = "Invalid email id.";    
     }      
 
     //Phone number    
     if (!num) {    
-        formIsValid = false;    
+        formValid = false;    
         formErrors["numErr"] = "Phone number is required.";    
     }    
     else {    
         var mobPattern = /^(\+\d{1,3}[- ]?)?\d{9}$/;    
         if (!mobPattern.test(num)) {    
-            formIsValid = false;    
+            formValid = false;    
             formErrors["numErr"] = "Invalid phone number.";    
         }    
     }   
-    this.setState({ formErrors: formErrors });    
+    this.setState({ formErrors: formErrors ,formIsValid:formValid});    
     return formIsValid;   
   
 } 
@@ -94,9 +93,7 @@ class UserForm extends React.Component {
       const userid = Number(window.location.pathname.split("/")[2].slice(-1));
       this.setState({ id: userid });
 
-      const userEdit = this.props.data.find(
-        (user) => user.id === userid
-      );
+      const userEdit = this.props.data.find( (user) => user.id === userid  );
       this.setState({
         id: userid,
         name: userEdit.name,
@@ -109,7 +106,7 @@ class UserForm extends React.Component {
 
   generateId = () => {
     this.setState({ id: Number(this.state.id + 1) });
-    console.log("idvalue: ", this.state.id);
+    console.log("prev-id: ", this.state.id);
     document.getElementById("generate").disabled = true;
   };
 
@@ -145,19 +142,25 @@ class UserForm extends React.Component {
     this.handleFormValidation(this.state);
   };
 
-  handleSubmit = (event) => {
+  handleSubmit = (event) => {    
+    const { id, name, gender, email, contact } = this.state;
+    const { num } = contact;
+
     event.preventDefault();
     const formData = {
-      id: this.state.id,
-      name: this.state.name,
-      gender: this.state.gender,
-      email: this.state.email,
-      contact: { cc: 91, num: this.state.contact.num },
+      id: id,
+      name: name,
+      gender: gender,
+      email: email,
+      contact: { cc: 91, num: num },
     };
     this.props.addFormData(formData);
 
-    if (this.handleFormValidation()) {
-      alert("You have been successfully registered.");
+    if (this.state.formIsValid ) {
+     alert ("You have been successfully registered.")
+    }
+    else{
+      console.error('fill the form');
     }
     
     this.setState(this.initialState);
@@ -176,13 +179,23 @@ class UserForm extends React.Component {
 
     return (
       <div
-        className="container my-2 p-2"
-        style={{ backgroundColor: "lightblue" }}
+        className="container my-2 p-2 bg-dark text-light"
       >
-        Add-User
-        <Form className=" border border-primary p-2" >
+        { <div
+            className="container my-2 p-2 border border-light shadow"
+            style={{textAlign:'center' }}
+          >   
+            { this.props.isAdd ? 
+                ( <h3> Add-User: </h3> ) : ( <h3> Edit-User: </h3> )
+            }
+            <i> ! Id - { id } </i>
+          </div>        
+        }
+
+        <Form className=" border  p-2" >
           <label className="mb-1 p-2">
             Name:
+          </label>
             <input
               type="text"
               name="name"
@@ -196,11 +209,12 @@ class UserForm extends React.Component {
                 {nameErr}
               </div>
             }  
-          </label>{" "}
+          {" "}
 
           <br />
           <label className="mb-1 p-2">
             Gender:
+          </label>
             <input
               required
               className="ms-2"
@@ -222,11 +236,12 @@ class UserForm extends React.Component {
               onChange={this.handleInputChange}
             />{" "}
             Female
-          </label>{" "}
+          {" "}
           <br />
 
           <label className="mb-1 p-2">
             E-mail:
+          </label>
             <input
               type="email"
               name="email"
@@ -240,11 +255,12 @@ class UserForm extends React.Component {
                 {emailErr}
               </div>
             }    
-          </label>{" "}
+         {" "}
 
           <br />
           <label className="mb-1 p-2">
-            Contact:
+            Number:
+          </label>
             <input
               type="Number"
               name="cc"
@@ -253,7 +269,7 @@ class UserForm extends React.Component {
               disabled
             />
 
-            No:
+            -
             <input
               type="number"
               name="num"
@@ -267,11 +283,12 @@ class UserForm extends React.Component {
                 {numErr}
               </div>    
             }    
-          </label>{" "}
+          {" "}
 
           <br />
           <label className="mb-1 p-2">
-            UserId:
+            User-Id:
+          </label>
             <input
               disabled
               type="Number"
@@ -279,9 +296,9 @@ class UserForm extends React.Component {
               value={id}
               onChange={this.generateId}
             />
-          </label>
-
+          
           <button
+            required
             id="generate"
             type="button"
             onClick={this.generateId}
@@ -293,21 +310,21 @@ class UserForm extends React.Component {
 
         </Form>
 
-        <footer className="m-2 ">
+        <footer className="container p-2 ">
           {this.props.isAdd ? (
             <>
               <button
-                className="ms-1 p-1 btn btn-success"
+                className="ms p-1 btn btn-success"
                 type="submit"
                 onClick={this.handleSubmit}
               >
-                <Link to="/" style={{ textDecoration: "none", color: "black" }}>
+                <Link to='/' style={{ textDecoration: "none", color: "black" }}>
                   Submit
                 </Link>
               </button>
 
               <button
-                className="ms-1 p-1 btn btn-info"
+                className="ms-2 p-1 btn btn-info"
                 type="reset"
                 onClick={this.resetForm}
               >
@@ -317,7 +334,7 @@ class UserForm extends React.Component {
             </>
           ) : (
             <button
-              className="ms-1 p-1 btn btn-success"
+              className="ms-auto p-1 btn btn-success"
               onClick={this.changeUserData}
             >
               <Link to="/" style={{ textDecoration: "none", color: "black" }}>
@@ -327,7 +344,7 @@ class UserForm extends React.Component {
           )}
 
           <button
-            className="ms-1 p-1 btn btn-danger"
+            className="ms-2 p-1 btn btn-danger"
             type="cancel"
             onClick={this.cancelForm}
           >
