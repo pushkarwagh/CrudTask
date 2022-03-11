@@ -143,7 +143,7 @@ class UserForm extends React.Component {
   };
 
   handleSubmit = (event) => {    
-    const { id, name, gender, email, contact } = this.state;
+    const { id, name, gender, email, contact, formIsValid } = this.state;
     const { num } = contact;
 
     event.preventDefault();
@@ -156,7 +156,7 @@ class UserForm extends React.Component {
     };
     this.props.addFormData(formData);
 
-    if (this.state.formIsValid ) {
+    if (formIsValid ) {
      alert ("You have been successfully registered.")
     }
     else{
@@ -293,7 +293,7 @@ class UserForm extends React.Component {
               disabled
               type="Number"
               placeholder="Disabled"
-              value={id}
+              value={ id }
               onChange={this.generateId}
             />
           

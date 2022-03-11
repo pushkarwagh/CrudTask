@@ -1,5 +1,6 @@
 import React from "react";
 import { Table } from "react-bootstrap";
+import axios from 'axios';
 import { Link } from "react-router-dom";
 
 import { GrEdit, GrView } from "react-icons/gr";
@@ -10,6 +11,7 @@ class UserTable extends React.Component {
     super(props);
     this.state = {
       addOrEdit: true,
+      posts: [],
     };
     /*this.handleData= this.handleData.bind(this); */
   }
@@ -20,6 +22,16 @@ class UserTable extends React.Component {
   // componentWillUnmount() {
   //   alert("leaving the table page!");
   // }
+
+  componentDidMount = () => {
+    axios.get('https://api.stackexchange.com/2.3/posts?order=desc&sort=activity&site=stackoverflow')
+      .then((response) => {
+        if (response && response.data) {
+          const postsData = response.data.items;
+          this.setState({ posts: postsData })
+        }
+      })
+  }
 
   deleteData = (id) => {
     // console.log(id)
@@ -35,6 +47,7 @@ class UserTable extends React.Component {
 
   render() {
     const { isChange } = this.props;
+    console.log('posts---', this.state.posts)
 
     return (
       <div className="container my-2">
